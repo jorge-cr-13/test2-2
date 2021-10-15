@@ -17,7 +17,7 @@ env:
   java_version: '12.x'
   ios_device: 'iPhone 11 Pro (14.5)'
 jobs:
-  pre_job:
+  skip_jobs:
     # continue-on-error: true # Uncomment once integration is finished
     runs-on: ubuntu-latest
     # Map a step output to a job output
@@ -31,9 +31,10 @@ jobs:
           paths_ignore: '["**/README.md", "**/docs/**",".github/**/**"]'
           do_not_skip: '[ "workflow_dispatch", "schedule"]'
 
+  
   main_job:
-    needs: pre_job
-    if: (needs.pre_job.outputs.should_skip != 'true')
+    needs: skip_jobs
+    if: (needs.skip_jobs.outputs.should_skip != 'true')
     runs-on: ubuntu-latest
     steps:
       - run: echo "Running slow tests..." && sleep 30
@@ -41,8 +42,8 @@ jobs:
   checks:
     name: Run all checks
     runs-on: ubuntu-latest
-    needs: pre_job
-    if: (needs.pre_job.outputs.should_skip != 'true')
+    needs: skip_jobs
+    if: (needs.skip_jobs.outputs.should_skip != 'true')
     timeout-minutes: 15
     steps:
       - name: Install SSH key
