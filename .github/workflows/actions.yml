@@ -27,7 +27,7 @@ jobs:
         uses: fkirc/skip-duplicate-actions@v3.4.1
         with:
           paths_ignore: '["**/README.md","**/docs/**",".github/workflows/actions.yml",".DS_Store"]'
-          do_not_skip: '[]'
+          do_not_skip: '["schedule"]'
 
   main_job:
     needs: pre_job
