@@ -3,7 +3,7 @@ name: Xayn PR to develop checks and tests
 on:
   pull_request:
     branches:
-      - dev
+      - master
     types: [synchronize, reopened, labeled]
   workflow_dispatch:
 
