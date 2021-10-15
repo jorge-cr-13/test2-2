@@ -41,6 +41,7 @@ jobs:
   checks:
     name: Run all checks
     runs-on: ubuntu-latest
+    needs: pre_job
     if: (needs.pre_job.outputs.should_skip != 'true')
     timeout-minutes: 15
     steps:
