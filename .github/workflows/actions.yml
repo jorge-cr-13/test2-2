@@ -172,7 +172,7 @@ jobs:
   build_and_publish_feature_branch:
     name: Build web, push to Docker Hub and deploy on Kubernetes
     runs-on: ubuntu-latest
-    if: ((github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'Feature Branch')) || (github.event_name == 'workflow_dispatch')) && && (needs.skip_jobs.outputs.should_skip != 'true')
+    if: ((github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'Feature Branch')) || (github.event_name == 'workflow_dispatch')) && (needs.skip_jobs.outputs.should_skip != 'true')
     steps:
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
