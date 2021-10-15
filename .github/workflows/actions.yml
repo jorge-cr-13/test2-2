@@ -5,27 +5,337 @@ on:
     branches:
       - master
     types: [synchronize, reopened, labeled]
+  workflow_dispatch:
 
-jobs:
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.ref }}
+
+env:
+  flutter_channel: 'stable'
+  flutter_version: '2.5.1'
+  java_version: '12.x'
+  ios_device: 'iPhone 11 Pro (14.5)'
+jobs:  
   pre_job:
-    # continue-on-error: true # Uncomment once integration is finished
     runs-on: ubuntu-latest
-    # Map a step output to a job output
     outputs:
-      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+      should_skip: (steps.skip_check.outputs.should_skip)
     steps:
       - id: skip_check
-        uses: fkirc/skip-duplicate-actions@master
+        name: Skip Duplicate Actions
+        uses: fkirc/skip-duplicate-actions@v3.4.1
         with:
-          # All of these options are optional, so you can remove them if you are happy with the defaults
-          concurrent_skipping: 'never'
-          skip_after_successful_duplicate: 'true'
-          paths_ignore: '["**/README.md", ".github/**/**"]'
-          do_not_skip: '["schedule"]'
+          paths_ignore: '["**/README.md","**/docs/**",".github/workflows/actions.yml",".DS_Store"]'
 
   main_job:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - run: echo ${{ needs.pre_job.outputs.should_skip }}
       - run: echo "Running slow tests..." && sleep 30
+
+  checks:
+    name: Run all checks
+    runs-on: ubuntu-latest
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
+    timeout-minutes: 15
+    steps:
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            /Users/runner/hostedtoolcache/flutter
+            ~/xayn_search/ios/Pods
+          key: ios-flutter-${{ env.flutter_version }}
+          restore-keys: |
+            ios-flutter-cache-
+      - name: Install Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          channel: ${{ env.flutter_channel }}
+          flutter-version: ${{ env.flutter_version }}
+
+      - name: Install Sodium
+        run: |
+          sudo apt-get install -y libsodium-dev
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libsodium.so /usr/local/lib/libsodium.so
+      - name: Run all checks of all projects in parallel
+        run: |
+          ./run_all_checks.sh
+# jobs:
+#   checks:
+#     name: Run all checks
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 15
+#     steps:
+#       - name: Install SSH key
+#         uses: shimataro/ssh-key-action@v2
+#         with:
+#           key: ${{ secrets.SSH }}
+#           known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+#       - name: Checkout
+#         uses: actions/checkout@v2
+
+#       - name: Cache Flutter dependencies
+#         uses: actions/cache@v2
+#         with:
+#           path: |
+#             /Users/runner/hostedtoolcache/flutter
+#             ~/xayn_search/ios/Pods
+#           key: ios-flutter-${{ env.flutter_version }}
+#           restore-keys: |
+#             ios-flutter-cache-
+
+#       - name: Install Flutter
+#         uses: subosito/flutter-action@v1
+#         with:
+#           channel: ${{ env.flutter_channel }}
+#           flutter-version: ${{ env.flutter_version }}
+
+#       - name: Install Sodium
+#         run: |
+#           sudo apt-get install -y libsodium-dev
+#           sudo ln -s /usr/lib/x86_64-linux-gnu/libsodium.so /usr/local/lib/libsodium.so
+
+#       - name: Run all checks of all projects in parallel
+#         run: |
+#           ./run_all_checks.sh
+
+#   ui-tests:
+#     name: UI Tests
+#     runs-on: macos-11
+#     timeout-minutes: 60
+#     if: contains(github.event.pull_request.labels.*.name, 'Testing')
+#     needs: checks
+#     steps:
+#       - name: Install latest cocoapods
+#         run: sudo gem install cocoapods --pre
+
+#       - name: List all simulators
+#         run: 'xcrun instruments -s'
+
+#       - name: Start Simulator
+#         run: |
+#           UDID=$(
+#             xcrun instruments -s |
+#             awk \
+#               -F ' *[][]' \
+#               -v 'device=${{ env.ios_device }}' \
+#               '$1 == device { print $2 }'
+#           )
+#           xcrun simctl boot "${UDID:?No Simulator with this name found}"
+
+#       - name: Install SSH key
+#         uses: shimataro/ssh-key-action@v2
+#         with:
+#           key: ${{ secrets.SSH }}
+#           known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+#       - name: Checkout
+#         uses: actions/checkout@v2
+
+#       # Slow cache restoring seems to be a recurring problem on GH Actions especially for MacOS runners
+#       - name: Cache Flutter dependencies
+#         uses: actions/cache@v2
+#         with:
+#           path: |
+#             /Users/runner/hostedtoolcache/flutter
+#             ~/xayn_search/ios/Pods
+#           key: ios-flutter-${{ env.flutter_version }}
+#           restore-keys: |
+#             ios-flutter-cache-
+
+#       - name: Install Flutter
+#         uses: subosito/flutter-action@v1
+#         with:
+#           channel: ${{ env.flutter_channel }}
+#           flutter-version: ${{ env.flutter_version }}
+
+#       - name: Copy env files Search
+#         working-directory: ./xayn_search
+#         run: |
+#           cp .env.example .env.debug
+#           cp .env.example .env.production
+
+#       - name: Run Pub Get and Build Runner
+#         working-directory: ./xayn_search
+#         run: |
+#           ./run_prepush_checks.sh -p
+#           flutter pub run build_runner build --delete-conflicting-outputs && flutter format lib/messages/
+
+#       - name: Build 4 Android Debug
+#         env:
+#           GITHUB_USERNAME: 'xayn-admin'
+#           GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+#         working-directory: ./xayn_search
+#         run: |
+#           flutter build apk --debug
+
+#       - name: Select latest Xcode version
+#         uses: maxim-lobanov/setup-xcode@v1
+#         with:
+#           xcode-version: latest-stable
+
+#       - name: App UI tests on Simulator
+#         timeout-minutes: 20
+#         working-directory: ./xayn_search
+#         run: |
+#           cp .env.example .env.debug
+#           cp .env.example .env.production
+#           pod install --project-directory=ios
+#           flutter drive --target=test_driver/app.dart
+
+#       - name: Build 4 iOS
+#         working-directory: ./xayn_search
+#         run: |
+#           flutter build ios --debug --no-codesign
+
+#   build_and_publish_feature_branch:
+#     name: Build web, push to Docker Hub and deploy on Kubernetes
+#     runs-on: ubuntu-latest
+#     if: (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'Feature Branch')) || (github.event_name == 'workflow_dispatch')
+#     steps:
+#       - name: Install SSH key
+#         uses: shimataro/ssh-key-action@v2
+#         with:
+#           key: ${{ secrets.SSH }}
+#           known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+#       - name: Checkout
+#         uses: actions/checkout@v2
+
+#       - name: Cache Flutter dependencies
+#         uses: actions/cache@v2
+#         with:
+#           path: |
+#             /Users/runner/hostedtoolcache/flutter
+#             ~/xayn_search/ios/Pods
+#           key: ios-flutter-${{ env.flutter_version }}
+#           restore-keys: |
+#             ios-flutter-cache-
+
+#       - name: Install Flutter
+#         uses: subosito/flutter-action@v1
+#         with:
+#           channel: ${{ env.flutter_channel }}
+#           flutter-version: ${{ env.flutter_version }}
+
+#       - name: Install Sodium
+#         run: |
+#           sudo apt-get install -y libsodium-dev
+#           sudo ln -s /usr/lib/x86_64-linux-gnu/libsodium.so /usr/local/lib/libsodium.so
+
+#       - name: Analyze & unit test code
+#         run: ./run_all_checks.sh
+
+#       - name: Build Xayn Search for Web
+#         id: xayn-web-build
+#         continue-on-error: true
+#         timeout-minutes: 20
+#         env:
+#           SEARCH_API_SECRET_PRODUCTION: ${{ secrets.SEARCH_API_SECRET_PRODUCTION }}
+#           SEARCH_API_SECRET_DEBUG: ${{ secrets.SEARCH_API_SECRET_DEBUG }}
+#           IMAGE_FETCHER_URL_PRODUCTION: ${{ secrets.IMAGE_FETCHER_URL_PRODUCTION }}
+#           IMAGE_FETCHER_URL_DEBUG: ${{ secrets.IMAGE_FETCHER_URL_DEBUG }}
+#           COUNTLY_APP_KEY_PRODUCTION: ${{ secrets.COUNTLY_APP_KEY_PRODUCTION }}
+#           COUNTLY_APP_KEY_DEBUG: ${{ secrets.COUNTLY_APP_KEY_DEBUG }}
+#           TURN_SERVER_KEY: ${{ secrets.TURN_SERVER_KEY }}
+#         working-directory: ./xayn_search
+#         run: |
+#           build_scripts/build_web_for_cdn_release.sh -I -r
+#           find build/web -type d -exec chmod 2755 {} \;
+#           find build/web -type f -exec chmod 0644 {} \;
+
+#       # Temporary: remove after these issues are resolved:
+#       # https://github.com/flutter/flutter/issues/53639
+#       # https://github.com/flutter/flutter/issues/70101
+#       - name: Workaround for bundling canvaskit.js and canvaskit.wasm with xayn_search
+#         id: flutter-workaround
+#         working-directory: ./xayn_search
+#         run: |
+#           wasmLocation=$(grep canvaskit-wasm build/web/main.dart.js | sed -e "s,^.*https,https,g" -e "s,\\/bin.*,\\/bin,g" | uniq)
+#           echo "Downloading WASM from \"$wasmLocation\" ..."
+#           curl -so build/web/canvaskit.js "$wasmLocation/canvaskit.js"
+#           curl -so build/web/canvaskit.wasm "$wasmLocation/canvaskit.wasm"
+#           sed -i -e "s,$wasmLocation,.,g" build/web/main.dart.js
+
+#       - name: Extract and lowercase branch name
+#         id: extract-branch
+#         shell: bash
+#         run: |
+#           if [[ "${GITHUB_EVENT_NAME}" = "pull_request" ]]
+#             then
+#               # GITHUB_HEAD_REF only exists on events of type pull_request
+#               echo "##[set-output name=branch;]$(echo ${GITHUB_HEAD_REF,,})"
+#             else
+#               # So for workflow_dispatch events we extract the branch name from GITHUB_REF by removing "refs/heads/"
+#               echo "##[set-output name=branch;]$(GITHUB_REF=${GITHUB_REF#refs/heads/} && echo ${GITHUB_REF,,})"
+#           fi
+
+#       - name: Login to Docker Hub
+#         id: docker-login
+#         uses: docker/login-action@v1
+#         with:
+#           username: ${{ secrets.DOCKERHUB_USERNAME }}
+#           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+#       - name: Setup Docker Buildx
+#         uses: docker/setup-buildx-action@v1
+
+#       - name: Build, Tag & Push Docker Image
+#         id: docker-build-tag-push
+#         uses: docker/build-push-action@v2
+#         if: steps.xayn-web-build.outcome == 'success'
+#         continue-on-error: true
+#         with:
+#           push: true
+#           context: .
+#           file: docker/Dockerfile
+#           tags: xaynetwork/xayn_search:${{ steps.extract-branch.outputs.branch }}
+
+#       - name: Notify status of Docker Build step on Slack
+#         uses: 8398a7/action-slack@v3
+#         if: always()
+#         with:
+#           status: custom
+#           fields: workflow,job,repo,ref
+#           custom_payload: |
+#             {
+#               username: 'Docker Hub',
+#               icon_emoji: ':docker:',
+#               attachments: [{
+#                 color: '${{ steps.docker-build-tag-push.outcome }}' === 'success' ? 'good' : '${{ steps.docker-build-tag-push.outcome }}' === 'failure' ? 'danger' : 'warning',
+#                 text: 'Triggered by ${{ github.actor }} for ${{ github.ref }}\nLogs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\nBuild and publish xaynetwork/xayn_search:${{ steps.extract-branch.outputs.branch }}',
+#               }]
+#             }
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_DOCKER_HUB }} # posts to #docker-hub channel
+
+#       - name: Trigger Kubernetes Feature Branch deployment
+#         id: k8s-deployment
+#         if: steps.docker-build-tag-push.outcome == 'success'
+#         env:
+#           GHA_TOKEN: ${{ secrets.GHA_TOKEN }}
+#           GHA_DEVOPS_REPO: ${{ secrets.GHA_DEVOPS_REPO }}
+#           GHA_EVENT_TYPE_FEATURE_BRANCH: ${{ secrets.GHA_EVENT_TYPE_FEATURE_BRANCH }}
+#           GHA_ACTOR: ${{ github.actor }}
+#           GHA_BRANCH: ${{ steps.extract-branch.outputs.branch }}
+#           DEPLOY_ENV: 'dev'
+#         run: |
+#           curl -v -XPOST https://api.github.com/repos/${GHA_DEVOPS_REPO}/dispatches -H "Authorization: token ${GHA_TOKEN}" -H "Accept: application/vnd.github.v3+json" -H "Content-Type: application/json" -d "{\"event_type\":\"${GHA_EVENT_TYPE_FEATURE_BRANCH}\",\"client_payload\":{\"actor\":\"${GHA_ACTOR}\",\"branch\":\"${GHA_BRANCH}\",\"environment\":\"${DEPLOY_ENV}\"}}"
+
+#           -->
