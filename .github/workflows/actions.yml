@@ -5,33 +5,27 @@ on:
     branches:
       - master
     types: [synchronize, reopened, labeled]
-  workflow_dispatch:
 
-concurrency:
-  cancel-in-progress: true
-  group: ${{ github.ref }}
-
-env:
-  flutter_channel: 'stable'
-  flutter_version: '2.5.1'
-  java_version: '12.x'
-  ios_device: 'iPhone 11 Pro (14.5)'
-jobs:  
+jobs:
   pre_job:
+    # continue-on-error: true # Uncomment once integration is finished
     runs-on: ubuntu-latest
+    # Map a step output to a job output
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
     steps:
       - id: skip_check
-        name: Skip Duplicate Actions
-        uses: fkirc/skip-duplicate-actions@v3.4.1
+        uses: fkirc/skip-duplicate-actions@master
         with:
-          paths_ignore: '["**/README.md","**/docs/**",".github/workflows/actions.yml",".DS_Store"]'
+          # All of these options are optional, so you can remove them if you are happy with the defaults
+          concurrent_skipping: 'never'
+          skip_after_successful_duplicate: 'true'
+          paths_ignore: '["**/README.md", "**/docs/**"]'
+          do_not_skip: '["pull_request", "workflow_dispatch", "schedule"]'
 
   main_job:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ needs.pre_job.outputs.should_skip }}
       - run: echo "Running slow tests..." && sleep 30
