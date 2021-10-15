@@ -3,7 +3,7 @@ name: Xayn PR to develop checks and tests
 on:
   pull_request:
     branches:
-      - dev
+      - master
     types: [synchronize, reopened, labeled]
   workflow_dispatch:
 
@@ -26,7 +26,7 @@ jobs:
         name: Skip Duplicate Actions
         uses: fkirc/skip-duplicate-actions@v3.4.1
         with:
-          paths_ignore: '["**/README.md","**/docs/**",".github/**"]'
+          paths_ignore: '["**/README.md","**/docs/**",".github/workflows/actions.yml",".DS_Store"]'
 
   main_job:
     needs: pre_job
