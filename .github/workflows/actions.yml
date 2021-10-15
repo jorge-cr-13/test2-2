@@ -38,46 +38,45 @@ jobs:
     steps:
       - run: echo "Running slow tests..." && sleep 30
 
-  
-# jobs:
-#   checks:
-#     name: Run all checks
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 15
-#     steps:
-#       - name: Install SSH key
-#         uses: shimataro/ssh-key-action@v2
-#         with:
-#           key: ${{ secrets.SSH }}
-#           known_hosts: ${{ secrets.KNOWN_HOSTS }}
+  checks:
+    name: Run all checks
+    runs-on: ubuntu-latest
+    if: (needs.pre_job.outputs.should_skip != 'true')
+    timeout-minutes: 15
+    steps:
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-#       - name: Checkout
-#         uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-#       - name: Cache Flutter dependencies
-#         uses: actions/cache@v2
-#         with:
-#           path: |
-#             /Users/runner/hostedtoolcache/flutter
-#             ~/xayn_search/ios/Pods
-#           key: ios-flutter-${{ env.flutter_version }}
-#           restore-keys: |
-#             ios-flutter-cache-
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            /Users/runner/hostedtoolcache/flutter
+            ~/xayn_search/ios/Pods
+          key: ios-flutter-${{ env.flutter_version }}
+          restore-keys: |
+            ios-flutter-cache-
 
-#       - name: Install Flutter
-#         uses: subosito/flutter-action@v1
-#         with:
-#           channel: ${{ env.flutter_channel }}
-#           flutter-version: ${{ env.flutter_version }}
+      - name: Install Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          channel: ${{ env.flutter_channel }}
+          flutter-version: ${{ env.flutter_version }}
 
-#       - name: Install Sodium
-#         run: |
-#           sudo apt-get install -y libsodium-dev
-#           sudo ln -s /usr/lib/x86_64-linux-gnu/libsodium.so /usr/local/lib/libsodium.so
+      - name: Install Sodium
+        run: |
+          sudo apt-get install -y libsodium-dev
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libsodium.so /usr/local/lib/libsodium.so
 
-#       - name: Run all checks of all projects in parallel
-#         run: |
-#           ./run_all_checks.sh
+      - name: Run all checks of all projects in parallel
+        run: |
+          ./run_all_checks.sh
 
 #   ui-tests:
 #     name: UI Tests
