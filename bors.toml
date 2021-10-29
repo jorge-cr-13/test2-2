@@ -1,6 +1,7 @@
-status = [ "main_job", "checks" ]
+status = [ "Main Job" ]
 block_labels = [ "Testing" ]
 # cut_body_after = "<details>"
 timeout_sec = 36000 # ten hours
 #required_approvals = 2
 delete_merged_branches = true
+use_squash_merge = true
