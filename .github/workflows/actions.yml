@@ -1,4 +1,4 @@
-name: Xayn PR to develop checks and tests
+name: Actions with Bors
 
 on:
   push:
