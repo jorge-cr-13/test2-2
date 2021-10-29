@@ -4,15 +4,8 @@ on:
   push:
     branches:
       [staging1, trying1]
-  pull_request:
-    branches:
-      - master
-    types: [opened, synchronize, reopened, labeled]
-  workflow_dispatch:
 
-concurrency:
-  cancel-in-progress: true
-  group: ${{ github.ref }}
+  workflow_dispatch:
 
 jobs:
   main_job:
