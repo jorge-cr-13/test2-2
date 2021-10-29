@@ -1,4 +1,4 @@
 status = [ "main_job", "checks" ]
-# block_labels = [ "S-do-not-merge-yet" ]
+block_labels = [ "Testing" ]
 # cut_body_after = "<details>"
 timeout_sec = 36000 # ten hours

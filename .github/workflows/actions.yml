@@ -3,7 +3,7 @@ name: Xayn PR to develop checks and tests
 on:
   push:
     branches:
-      [master, staging, trying]
+      [master, staging1, trying1]
   pull_request:
     branches:
       - master
