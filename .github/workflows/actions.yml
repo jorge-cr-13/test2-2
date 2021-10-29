@@ -1,6 +1,9 @@
 name: Xayn PR to develop checks and tests
 
 on:
+  push:
+    branches:
+      [main, staging, trying]
   pull_request:
     branches:
       - master
