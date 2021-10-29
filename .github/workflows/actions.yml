@@ -9,6 +9,7 @@ on:
 ##
 jobs:
   main_job:
+    name: Main Job
     runs-on: ubuntu-latest
     steps:
       - run: echo "Running slow tests..." && sleep 5

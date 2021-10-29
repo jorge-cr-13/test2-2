@@ -1,4 +1,4 @@
-status = [ "main_job", "checks" ]
+status = [ "Main Job" ]
 block_labels = [ "Testing" ]
 # cut_body_after = "<details>"
 timeout_sec = 36000 # ten hours
