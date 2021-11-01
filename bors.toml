@@ -1,4 +1,4 @@
-status = [ "Main Job" ]
+status = [ "Main Job","checks" ]
 block_labels = [ "Testing" ]
 timeout_sec = 36000 # ten hours
 #required_approvals = 2
