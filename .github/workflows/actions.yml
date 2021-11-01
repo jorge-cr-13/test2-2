@@ -2,10 +2,7 @@ name: Actions with Bors
 
 on:
   push:
-    branches:
-      [staging1, trying1]
 
-  workflow_dispatch:
 ##
 jobs:
   main_job:
