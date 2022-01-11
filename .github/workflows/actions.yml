@@ -11,10 +11,10 @@ jobs:
       - name: test
         continue-on-error: true
         run: |
-          echo 1                    
+          exit 1                    
       - name: retry
         continue-on-error: true
-        if: steps.test.outcome=='failure'         # check the step outcome, retry 1st time
+        if: steps.test.outcome== "failure"         # check the step outcome, retry 1st time
         run: |
           exit 1                                
       - name: retry 2
