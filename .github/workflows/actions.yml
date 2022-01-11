@@ -12,7 +12,11 @@ jobs:
         id: test
         continue-on-error: true
         run: |
-          exit 1                    
+          for i in {1..4}
+          do
+            exit 1
+            echo i
+          done                
       - name: retry
         id: retry1
         continue-on-error: true
