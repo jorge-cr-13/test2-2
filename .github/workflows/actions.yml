@@ -19,6 +19,7 @@ jobs:
         run: |
           exit 1                                
       - name: retry 2
+        id: retry2
         continue-on-error: true
         id: retry2
         if: steps.retry1.outcome=='failure'   # check the step outcome, retry 2nd time
@@ -26,6 +27,7 @@ jobs:
           echo retry 2nd time
           exit 1     
       - name: retry 3
+        id: retry3
         continue-on-error: true
         id: retry3
         if: steps.retry2.outcome=='failure'      # check the step outcome, retry 3rd time
