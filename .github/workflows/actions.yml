@@ -32,4 +32,5 @@ jobs:
           echo retry 3rd time                
       - name: set the status              # set the workflow status if command failed
         run: |
+          echo ${{steps.test.outcome}}
           echo fine
