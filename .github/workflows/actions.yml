@@ -14,8 +14,8 @@ jobs:
         run: |
           for i in {1..4}
           do
-            exit 1
             echo i
+            exit 1  
           done                
       - name: retry
         id: retry1
