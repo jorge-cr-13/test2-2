@@ -29,7 +29,6 @@ jobs:
       - name: retry 3
         id: retry3
         continue-on-error: true
-        id: retry3
         if: steps.retry2.outcome=='failure'      # check the step outcome, retry 3rd time
         run: |
           echo retry 3rd time                
