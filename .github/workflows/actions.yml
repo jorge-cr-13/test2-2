@@ -1,49 +1,22 @@
-name: PR WIP Label Assigner  
+name: Test CI
 
 on:
-  pull_request:
-    types: [opened, converted_to_draft, ready_for_review]
-  workflow_dispatch:
+  push:
+    paths:
+      - 'testFolder/**'
 
-permissions: 
-  pull-requests: write
+permissions:
+  contents: read
+
+env:
+  RUST_NIGHTLY: nightly-2021-09-09
+  RUST_WORKSPACE: ${{ github.workspace }}/discovery_engine_core
+  RUSTFLAGS: "-D warnings"
+  RUSTDOCFLAGS: "-D warnings"
 
 jobs:
-  draft_PR:
-    if: (github.event.pull_request.draft == true)
+  cargo-format:
     runs-on: ubuntu-20.04
-    name: Add WIP label
+    timeout-minutes: 5
     steps:
-      - name: Add WIP Label
-        uses: buildsville/add-remove-label@6008d7bd99d3baeb7c04033584e68f8ec80b198b # v1
-        with:
-          token: ${{secrets.GITHUB_TOKEN}}
-          label: "WIP ⏳"
-          type: add
-
-      - name: Remove Ready for Review Label 
-        uses: buildsville/add-remove-label@6008d7bd99d3baeb7c04033584e68f8ec80b198b # v1
-        with:
-          token: ${{secrets.GITHUB_TOKEN}}
-          label: "Ready for review ✅"
-          type: remove
-
-  ready_for_review_PR:
-    if: (github.event.pull_request.draft == false)  
-    runs-on: ubuntu-20.04
-    name: Remove label
-    steps:
-      - name: Remove WIP Label 
-        uses: buildsville/add-remove-label@6008d7bd99d3baeb7c04033584e68f8ec80b198b # v1
-        if: contains(github.event.pull_request.labels.*.name, 'WIP ⏳')
-        with:
-          token: ${{secrets.GITHUB_TOKEN}}
-          label: "WIP ⏳"
-          type: remove
-
-      - name: Add Ready for Review Label
-        uses: buildsville/add-remove-label@6008d7bd99d3baeb7c04033584e68f8ec80b198b # v1
-        with:
-          token: ${{secrets.GITHUB_TOKEN}}
-          label: "Ready for review ✅"
-          type: add
+      - run: echo Hola
