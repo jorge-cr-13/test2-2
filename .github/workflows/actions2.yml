@@ -1,5 +1,4 @@
 name: Test CI
-
 on:
   push:
     branches-ignore:
@@ -7,15 +6,6 @@ on:
       - '_bors*'
     paths:
       - 'testFolder2/**'
-
-permissions:
-  contents: read
-
-env:
-  RUST_NIGHTLY: nightly-2021-09-09
-  RUST_WORKSPACE: ${{ github.workspace }}/discovery_engine_core
-  RUSTFLAGS: "-D warnings"
-  RUSTDOCFLAGS: "-D warnings"
 
 jobs:
   cargo-format:
