@@ -4,9 +4,8 @@ on:
   push:
     branches-ignore:
       - 'master'
-      - '_bors*'
     paths:
-      - 'testFolder/**'
+      - 'testFolder2/**'
 
 permissions:
   contents: read
@@ -22,4 +21,4 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - run: echo Hola
+      - run: echo Hola2

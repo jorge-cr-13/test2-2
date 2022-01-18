@@ -4,6 +4,7 @@ on:
   push:
     branches-ignore:
       - 'master'
+      - '_bors*'
     paths:
       - 'testFolder2/**'
 
