@@ -8,7 +8,7 @@ on:
       - 'testFolder2/**'
 
 jobs:
-  cargo-format:
+  cargo-format2:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
