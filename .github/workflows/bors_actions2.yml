@@ -2,7 +2,8 @@ name: Test CI
 on:
   push:
     branches-ignore:
-      - 'master'
+      - '_bors_staging'
+      - '_bors_trying'
     paths:
       - 'testFolder2/**'
 jobs:
