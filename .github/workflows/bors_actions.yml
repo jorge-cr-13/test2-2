@@ -1,0 +1,25 @@
+name: Test CI
+
+on:
+  push:
+    branches:
+      - '_bors_staging'
+      - '_bors_trying'
+    paths:
+      - 'testFolder/**'
+
+permissions:
+  contents: read
+
+env:
+  RUST_NIGHTLY: nightly-2021-09-09
+  RUST_WORKSPACE: ${{ github.workspace }}/discovery_engine_core
+  RUSTFLAGS: "-D warnings"
+  RUSTDOCFLAGS: "-D warnings"
+
+jobs:
+  cargo-format:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - run: echo Hola
