@@ -16,7 +16,7 @@ jobs:
       test2: ${{ steps.filter.outputs.test2 }}
     steps:
       # For pull requests it's not necessary to checkout the code
-      - uses: dorny/paths-filter@v2
+      - uses: dorny/paths-filter@v2.10.2
         id: filter
         with:
           filters: |
