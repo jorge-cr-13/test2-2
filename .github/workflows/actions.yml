@@ -27,8 +27,7 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - if: ${{ cargo.status == failure }}
-        run: echo Hola
+      - run: echo Hola
 
   cargo-format2:
     needs: changes
