@@ -46,19 +46,28 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Both of them
-        if: ${{ needs.changes.outputs.test == 'true' }} && ${{ needs.changes.outputs.test2 == 'true' }}
+        if: ${{ needs.changes.outputs.test == 'true' }} || ${{ needs.changes.outputs.test2 == 'true' }}
         run: |
-          if ( ${{ needs.cargo-format.result == 'success' }} && ${{ needs.cargo-format2.result == 'success' }} )
+          if ( ${{ needs.changes.outputs.test == 'true' }} )
           then
-            exit 0
+            if ( ${{ needs.changes.outputs.test2 == 'true' }} )
+            then
+              if ( ${{ needs.cargo-format.result == 'success'}} && ${{ needs.cargo-format2.result == 'success'}} )
+              then
+                exit 0
+              fi
+            elif ( ${{ needs.cargo-format.result == 'success'}} )
+            then
+              exit 0
+            fi
+          elif ( ${{ needs.changes.outputs.test2 == 'true' }})
+          then
+            if ( ${{ needs.cargo-format2.result == 'success'}} )
+            then
+              exit 0
+            fi
           else
             exit 1
           fi
-      - name: only 1 
-        if: (${{ needs.changes.outputs.test == 'true' }} && ${{ needs.cargo-format.result == 'success' }}) ||
-            (${{ needs.changes.outputs.test2 == 'true' }} && ${{ needs.cargo-format2.result == 'success' }})
-        run: exit 0 
-      - name: none
-        run: exit 1
-
+            
 
