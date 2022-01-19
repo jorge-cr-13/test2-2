@@ -38,7 +38,7 @@ jobs:
       - run: echo Hola2
 
   cargo:
-    needs: changes
+    needs: [changes, cargo-format, cargo-format2]
     if: ${{ needs.changes.outputs.test == 'true' }} || ${{ needs.changes.outputs.test2 == 'true' }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
