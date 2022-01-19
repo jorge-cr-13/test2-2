@@ -22,6 +22,7 @@ jobs:
               - 'testFolder2/**'
   
   cargo-format:
+    name: cargo-format
     needs: changes
     if: ${{ needs.changes.outputs.test == 'true' }}
     runs-on: ubuntu-20.04
@@ -30,6 +31,7 @@ jobs:
       - run: echo Hola
 
   cargo-format2:
+    name: cargo-format2
     needs: changes
     if: ${{ needs.changes.outputs.test2 == 'true' }}
     runs-on: ubuntu-20.04
