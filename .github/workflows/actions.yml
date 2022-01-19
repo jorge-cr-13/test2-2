@@ -64,7 +64,10 @@ jobs:
           then
             if ( ${{ needs.cargo-format2.result == 'success'}} )
             then
-              exit 0
+              if ( ${{ needs.changes.outputs.test == 'false' }} )
+              then
+                exit 0
+              fi
             fi
           else
             exit 1
