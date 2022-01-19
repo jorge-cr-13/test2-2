@@ -45,7 +45,7 @@ jobs:
     steps:
       - if: ${{ needs.changes.outputs.test == 'true' }} && ${{ needs.changes.outputs.test2 == 'true' }}
         run: |
-          if [ ${{ needs.cargo-format.status == 'success' }} && ${{ needs.cargo-format2.status == 'success' }} ]
+          if [ '${{ needs.cargo-format.status == 'success' }}' && '${{ needs.cargo-format2.status == 'success' }}' ]
           then
             exit 0
           else
