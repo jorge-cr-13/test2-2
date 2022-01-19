@@ -36,9 +36,9 @@ jobs:
       - if: ${{ needs.cargo.status == 'failure' }}
         run: echo Hola
 
-  cargo-format2:
-    needs: changes
-    runs-on: ubuntu-20.04
-    timeout-minutes: 5
-    steps:
-      - run: echo Hola2
+  # cargo-format2:
+  #   needs: changes
+  #   runs-on: ubuntu-20.04
+  #   timeout-minutes: 5
+  #   steps:
+  #     - run: echo Hola2
