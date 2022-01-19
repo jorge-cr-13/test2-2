@@ -23,7 +23,6 @@ jobs:
   
   cargo-format:
     name: cargo-format
-    id: cargo-format
     needs: changes
     if: ${{ needs.changes.outputs.test == 'true' }}
     runs-on: ubuntu-20.04
