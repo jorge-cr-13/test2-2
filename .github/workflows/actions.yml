@@ -45,9 +45,8 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - name: echo result
-        run: echo 'cargo-format - ${{ needs.cargo-format.result }}; echo cargo-format2 - ${{ needs.cargo-format2.result}}'
-      - if: ${{ needs.changes.outputs.test == 'true' }} && ${{ needs.changes.outputs.test2 == 'true' }}
+      - name: Both of them
+        if: ${{ needs.changes.outputs.test == 'true' }} && ${{ needs.changes.outputs.test2 == 'true' }}
         run: |
           if ( ${{ needs.cargo-format.result == 'success' }} && ${{ needs.cargo-format2.result == 'success' }} )
           then
@@ -55,5 +54,11 @@ jobs:
           else
             exit 1
           fi
+      - name: only 1 
+        if: (${{ needs.changes.outputs.test == 'true' }} && ${{ needs.cargo-format.result == 'success' }}) ||
+            (${{ needs.changes.outputs.test2 == 'true' }} && ${{ needs.cargo-format2.result == 'success' }})
+        run: exit 0 
+      - name: none
+        run: exit 1
 
 
