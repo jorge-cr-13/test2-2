@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - run: exit 1 
+      - run: exit 0
 
   cargo-format2:
     name: cargo-format2
@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - run: echo Hola2
+      - run: exit 0 
 
   cargo:
     needs: [changes, cargo-format, cargo-format2]
