@@ -44,7 +44,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: echo result
-        run: echo "cargo-format - ${{ needs.cargo-format.status }}; echo cargo-format2 - ${{ needs.cargo-format2.status}}
+        run: echo "cargo-format - ${{ needs.cargo-format.status }}; echo cargo-format2 - ${{ needs.cargo-format2.status}}"
       - if: ${{ needs.changes.outputs.test == 'true' }} && ${{ needs.changes.outputs.test2 == 'true' }}
         run: |
           if ( ${{ needs.cargo-format.status == 'success' }} && ${{ needs.cargo-format2.status == 'success' }} )
