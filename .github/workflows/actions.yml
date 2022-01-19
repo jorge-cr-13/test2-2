@@ -3,42 +3,57 @@ on:
   pull_request:
 
 jobs:
-  # # JOB to run change detection
-  # changes:
-  #   runs-on: ubuntu-latest
-  #   # Set job outputs to values from filter step
-  #   outputs:
-  #     test: ${{ steps.filter.outputs.test }}
-  #     test2: ${{ steps.filter.outputs.test2 }}
-  #   steps:
-  #     # For pull requests it's not necessary to checkout the code
-  #     - uses: dorny/paths-filter@v2.10.2
-  #       id: filter
-  #       with:
-  #         filters: |
-  #           test:
-  #             - 'testFolder/**'
-  #           test2:
-  #             - 'testFolder2/**'
+  # JOB to run change detection
+  changes:
+    runs-on: ubuntu-latest
+    # Set job outputs to values from filter step
+    outputs:
+      test: ${{ steps.filter.outputs.test }}
+      test2: ${{ steps.filter.outputs.test2 }}
+    steps:
+      # For pull requests it's not necessary to checkout the code
+      - uses: dorny/paths-filter@v2.10.2
+        id: filter
+        with:
+          filters: |
+            test:
+              - 'testFolder/**'
+            test2:
+              - 'testFolder2/**'
   
-  cargo:
-    runs-on: ubuntu-20.04
-    timeout-minutes: 5
-    steps:
-      - run: echo Hola Primero
-
-
   cargo-format:
-    needs: [cargo]
+    name: cargo-format
+    needs: changes
+    if: ${{ needs.changes.outputs.test == 'true' }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - if: ${{ needs.cargo.status == 'failure' }}
-        run: echo Hola
+      - run: echo Hola
 
-  # cargo-format2:
-  #   needs: changes
-  #   runs-on: ubuntu-20.04
-  #   timeout-minutes: 5
-  #   steps:
-  #     - run: echo Hola2
+  cargo-format2:
+    name: cargo-format2
+    needs: changes
+    if: ${{ needs.changes.outputs.test2 == 'true' }}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - run: echo Hola2
+
+  cargo:
+    needs: [changes, cargo-format, cargo-format2]
+    if: ${{always()}}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - name: echo result
+        run: echo 'cargo-format - ${{ needs.cargo-format.result }}; echo cargo-format2 - ${{ needs.cargo-format2.result}}'
+      - if: ${{ needs.changes.outputs.test == 'true' }} && ${{ needs.changes.outputs.test2 == 'true' }}
+        run: |
+          if ( ${{ needs.cargo-format.result == 'success' }} && ${{ needs.cargo-format2.result == 'success' }} )
+          then
+            exit 0
+          else
+            exit 1
+          fi
+
+
