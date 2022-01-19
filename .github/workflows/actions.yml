@@ -48,27 +48,15 @@ jobs:
       - name: Both of them
         if: ${{ needs.changes.outputs.test == 'true' }} || ${{ needs.changes.outputs.test2 == 'true' }}
         run: |
-          if ( ${{ needs.changes.outputs.test == 'true' }} )
+          if ( ${{ needs.changes.outputs.test == 'true' }} && ${{ needs.changes.outputs.test2 == 'true' }} && ${{ needs.cargo-format.result == 'success'}} && ${{ needs.cargo-format2.result == 'success'}} )
           then
-            if ( ${{ needs.changes.outputs.test2 == 'true' }} )
-            then
-              if ( ${{ needs.cargo-format.result == 'success'}} && ${{ needs.cargo-format2.result == 'success'}} )
-              then
-                exit 0
-              fi
-            elif ( ${{ needs.cargo-format.result == 'success'}} )
-            then
-              exit 0
-            fi
-          elif ( ${{ needs.changes.outputs.test2 == 'true' }})
+            exit 0
+          elif ( ${{ needs.changes.outputs.test == 'true' }} && ${{ needs.cargo-format.result == 'success'}} && ${{ needs.changes.outputs.test2 == 'false' }} )
           then
-            if ( ${{ needs.cargo-format2.result == 'success'}} )
-            then
-              if ( ${{ needs.changes.outputs.test == 'false' }} )
-              then
-                exit 0
-              fi
-            fi
+            exit 0
+          elif ( ${{ needs.changes.outputs.test2 == 'true' }} && ${{ needs.cargo-format2.result == 'success'}} && ${{ needs.changes.outputs.test == 'false' }} )
+          then
+            exit 0
           else
             exit 1
           fi
