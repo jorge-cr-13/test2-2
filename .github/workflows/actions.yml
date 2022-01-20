@@ -57,19 +57,19 @@ jobs:
     timeout-minutes: 5
     steps:
       - run: exit 0
-  # cargo-test2:
-  #   name: cargo-test2
-  #   needs: [changes, cargo-test]
-  #   if: ${{ always }}
-  #   runs-on: ubuntu-20.04
-  #   timeout-minutes: 5
-  #   steps:
-  #     - name: Rust result
-  #       run: |
-  #         if( needs.cargo-test.result == 'failure' )
-  #         then
-  #           exit 1
-  #     - run: exit 0
+  cargo-test2:
+    name: cargo-test2
+    needs: [changes, cargo-test]
+    if: ${{ always }}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - name: Rust result
+        run: |
+          if( needs.cargo-test.result == 'failure' )
+          then
+            exit 1
+      - run: exit 0
   # cargo-ok2:
   #   name: cargo-ok2
   #   needs: 
