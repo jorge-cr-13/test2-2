@@ -73,8 +73,8 @@ jobs:
   cargo-ok2:
     name: cargo-ok2
     needs: 
-      - cargo-format
-      - cargo-test
+      - cargo-format2
+      - cargo-test2
     if: ${{ needs.changes.outputs.test2 }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
