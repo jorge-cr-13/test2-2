@@ -60,7 +60,7 @@ jobs:
   cargo-test2:
     name: cargo-test2
     needs: [cargo-test]
-    if: ${{ always }}
+    if: ${{ always() }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
@@ -70,15 +70,15 @@ jobs:
           then
             exit 1
       - run: exit 0
-  # cargo-ok2:
-  #   name: cargo-ok2
-  #   needs: 
-  #     - cargo-format2
-  #     - cargo-test2
-  #   if: ${{ needs.changes.outputs.test2 }}
-  #   runs-on: ubuntu-20.04
-  #   timeout-minutes: 5
-  #   steps:
-  #     - run: exit 0
+  cargo-ok2:
+    name: cargo-ok2
+    needs: 
+      - cargo-format2
+      - cargo-test2
+    if: ${{ needs.changes.outputs.test2 }}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - run: exit 0
 
       
