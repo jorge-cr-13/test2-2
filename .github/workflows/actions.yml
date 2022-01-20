@@ -59,7 +59,7 @@ jobs:
       - run: exit 0
   cargo-test2:
     name: cargo-test2
-    needs: [changes, cargo-test]
+    needs: [cargo-test]
     if: ${{ always }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
