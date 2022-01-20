@@ -24,7 +24,7 @@ jobs:
   cargo-format:
     name: cargo-format
     needs: changes
-    if: ${{ needs.changes.outputs.test }}
+    if: ${{ needs.changes.outputs.test == 'true' }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
@@ -32,7 +32,7 @@ jobs:
   cargo-test:
     name: cargo-test
     needs: changes
-    if: ${{ needs.changes.outputs.test }}
+    if: ${{ needs.changes.outputs.test == 'true' }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
@@ -42,7 +42,7 @@ jobs:
     needs: 
       - cargo-format
       - cargo-test
-    if: ${{ needs.changes.outputs.test }}
+    if: ${{ needs.changes.outputs.test == 'true' }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
