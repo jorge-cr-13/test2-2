@@ -69,6 +69,7 @@ jobs:
           if( needs.cargo-test.result == 'failure' )
           then
             exit 1
+          fi
       - run: exit 0
   cargo-ok2:
     name: cargo-ok2
