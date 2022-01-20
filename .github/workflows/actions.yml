@@ -20,7 +20,7 @@ jobs:
               - 'testFolder/**'
             test2:
               - 'testFolder2/**'
-  
+  #TEST 1
   cargo-format:
     name: cargo-format
     needs: changes
@@ -28,8 +28,27 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - run: exit 1
+      - run: exit 0
+  cargo-test:
+    name: cargo-test
+    needs: changes
+    if: ${{ needs.changes.outputs.test }}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - run: exit 0
+  cargo-ok:
+    name: cargo-ok
+    needs: 
+      - cargo-format
+      - cargo-test
+    if: ${{ needs.changes.outputs.test }}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - run: exit 0
 
+  #TEST2
   cargo-format2:
     name: cargo-format2
     needs: changes
@@ -37,28 +56,29 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - run: exit 1
-
-  cargo:
-    needs: [changes, cargo-format, cargo-format2]
-    if: ${{always()}}
+      - run: exit 0
+  cargo-test2:
+    name: cargo-test2
+    needs: [changes, cargo-test]
+    if: ${{ always }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - name: Both of them
-        if: ${{ needs.changes.outputs.test  }} || ${{ needs.changes.outputs.test2 }}
+      - name: Rust result
         run: |
-          if ( ${{ needs.changes.outputs.test }} && ${{ needs.changes.outputs.test2 }} && ${{ needs.cargo-format.result == 'success'}} && ${{ needs.cargo-format2.result == 'success'}} )
+          if( needs.cargo-test.result == 'failure' )
           then
-            exit 0
-          elif ( ${{ needs.changes.outputs.test }} && ${{ needs.cargo-format.result == 'success'}} && ${{ !needs.changes.outputs.test2 }} )
-          then
-            exit 0
-          elif ( ${{ needs.changes.outputs.test2 }} && ${{ needs.cargo-format2.result == 'success'}} && ${{ !needs.changes.outputs.test }} )
-          then
-            exit 0
-          else
             exit 1
-          fi
-            
+      - run: exit 0
+  cargo-ok2:
+    name: cargo-ok2
+    needs: 
+      - cargo-format
+      - cargo-test
+    if: ${{ needs.changes.outputs.test2 }}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - run: exit 0
 
+      
