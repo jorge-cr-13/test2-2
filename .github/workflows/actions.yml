@@ -20,7 +20,7 @@ jobs:
               - 'testFolder/**'
             test2:
               - 'testFolder2/**'
-  #TEST 1
+    #TEST 1
   cargo-format:
     name: cargo-format
     needs: changes
@@ -48,7 +48,7 @@ jobs:
     steps:
       - run: exit 0
 
-  #TEST2
+    #TEST2
   cargo-format2:
     name: cargo-format2
     needs: changes
