@@ -82,7 +82,7 @@ jobs:
     needs: 
       - cargo-format2
       - cargo-test2
-    if: ${{ needs.selection.outputs.rust }}
+    if: ${{ needs.selection.outputs.rust == 'true' }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
