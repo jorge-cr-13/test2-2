@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - run: exit 0
+      - run: exit 1
 
   #   #TEST2
   cargo-format2:
@@ -81,7 +81,7 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - run: exit 1
+      - run: exit 0
 
   ci-ok:
     name: ci-ok
