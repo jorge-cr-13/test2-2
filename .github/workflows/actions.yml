@@ -87,7 +87,7 @@ jobs:
   ci-ok:
     name: ci-ok
     needs: [selection, cargo-ok2, cargo-ok]
-    if: ( ${{always()}} ) && ( ${{ needs.selection.outputs.cargo-ok == 'true'}} || ${{ needs.selection.outputs.cargo-ok2 == 'true' }} )
+    if: ( ${{always()}} && (${{ needs.selection.outputs.cargo-ok == 'true'}} || ${{ needs.selection.outputs.cargo-ok2 == 'true' }}) )
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
