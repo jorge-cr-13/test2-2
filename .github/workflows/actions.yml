@@ -12,16 +12,15 @@ jobs:
       dart2: ${{ steps.filter.outputs.dart2 }}
     steps:
       # For pull requests it's not necessary to checkout the code
-      - run: exit 1
       - uses: dorny/paths-filter@b2feaf19c27470162a626bd6fa8438ae5b263721
         id: filter
         with:
           filters: |
             dart:
-              - 'dartFolder/**'
-              - 'dartFolder2/**'
+              - 'testFolder/**'
+              - 'testFolder2/**'
             rust:
-              - 'dartFolder2/**'
+              - 'testFolder2/**'
     #TEST 1
   cargo-format:
     name: cargo-format
