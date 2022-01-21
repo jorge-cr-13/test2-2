@@ -72,7 +72,7 @@ jobs:
     steps:
       - name: Rust result
         run: |
-          if( needs.cargo-test.result == 'failure' )
+          if ( needs.cargo-test.result == 'failure' )
           then
             exit 1
           fi
