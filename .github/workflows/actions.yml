@@ -4,35 +4,37 @@ on:
 
 jobs:
   # JOB to run change detection
-  changes:
+  selection:
     runs-on: ubuntu-latest
     # Set job outputs to values from filter step
     outputs:
-      test: ${{ steps.filter.outputs.test }}
-      test2: ${{ steps.filter.outputs.test2 }}
+      dart: ${{ steps.filter.outputs.dart }}
+      rust: ${{ steps.filter.outputs.rust }}
     steps:
       # For pull requests it's not necessary to checkout the code
+      - run: exit 1 
       - uses: dorny/paths-filter@b2feaf19c27470162a626bd6fa8438ae5b263721
         id: filter
         with:
           filters: |
-            test:
+            dart:
               - 'testFolder/**'
-            test2:
+              - 'testFolder2/**'
+            rust:
               - 'testFolder2/**'
     #TEST 1
   cargo-format:
     name: cargo-format
-    needs: changes
-    if: ${{ needs.changes.outputs.test == 'true' }}
+    needs: selection
+    if: ${{ needs.selection.outputs.dart == 'true' }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
       - run: exit 0
   cargo-test:
     name: cargo-test
-    needs: changes
-    if: ${{ needs.changes.outputs.test == 'true' }}
+    needs: selection
+    if: ${{ needs.selection.outputs.dart == 'true' }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
@@ -42,7 +44,7 @@ jobs:
     needs: 
       - cargo-format
       - cargo-test
-    if: ${{ needs.changes.outputs.test == 'true' }}
+    if: ${{ needs.selection.outputs.dart == 'true' }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
@@ -51,16 +53,16 @@ jobs:
   #   #TEST2
   cargo-format2:
     name: cargo-format2
-    needs: changes
-    if: ${{ needs.changes.outputs.test2 }}
+    needs: selection
+    if: ${{ needs.selection.outputs.rust }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
       - run: exit 0
   cargo-test2:
     name: cargo-test2
-    needs: [cargo-test]
-    if: ${{ always() }}
+    needs: selection
+    if: ${{ needs.selection.outputs.rust }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
@@ -76,10 +78,34 @@ jobs:
     needs: 
       - cargo-format2
       - cargo-test2
-    if: ${{ needs.changes.outputs.test2 }}
+    if: ${{ needs.selection.outputs.rust }}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
       - run: exit 0
+
+  ci-ok:
+    name: ci-ok
+    needs: [selection, cargo-ok2, cargo-ok]
+    if: ${{always()}} 
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - name: CI OK Testing
+        run: |
+          if [ ${{ needs.selection.outputs.dart == 'true'}} || ${{ needs.selection.outputs.rust == 'true' }} ]
+          then
+            if [[ ( (needs.selection.outputs.dart != 'true' || needs.cargo-ok.result == 'success') && (needs.selection.outputs.rust != 'true' || needs.cargo-ok2.result == 'success') ) || 
+            (needs.selection.outputs.rust == 'true' && needs.cargo-ok2.result == 'success' && needs.selection.outputs.dart != 'true')
+            ]]
+            then
+              exit 0
+            else
+              exit 1
+            fi
+          else
+            exit 1
+          fi
+            
 
       
