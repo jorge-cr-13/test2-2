@@ -9,7 +9,7 @@ jobs:
     # Set job outputs to values from filter step
     outputs:
       dart: ${{ steps.filter.outputs.dart }}
-      dart2: ${{ steps.filter.outputs.dart2 }}
+      rust: ${{ steps.filter.outputs.rust }}
     steps:
       # For pull requests it's not necessary to checkout the code
       - uses: dorny/paths-filter@b2feaf19c27470162a626bd6fa8438ae5b263721
