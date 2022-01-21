@@ -41,7 +41,7 @@ jobs:
         if ( ${{needs.cargo-test2.result}} == 'failure')
           then
             exit 1
-          fi
+        fi
       - run: echo Sigue
   cargo-ok:
     name: cargo-ok
