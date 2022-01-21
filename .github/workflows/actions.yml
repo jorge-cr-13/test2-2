@@ -39,8 +39,8 @@ jobs:
     steps:
       - run: |
         if ( ${{needs.cargo-test2.result}} == 'failure')
-          then
-            exit 1
+        then
+          exit 1
         fi
       - run: echo Sigue
   cargo-ok:
