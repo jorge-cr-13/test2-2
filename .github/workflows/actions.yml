@@ -87,17 +87,22 @@ jobs:
   ci-ok:
     name: ci-ok
     needs: [selection, cargo-ok2, cargo-ok]
-    if: ( ${{always()}} && (${{ needs.selection.outputs.cargo-ok == 'true'}} || ${{ needs.selection.outputs.cargo-ok2 == 'true' }}) )
+    if: ${{always()}} 
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
       - name: CI OK Testing
         run: |
-          if [[ ( (needs.selection.outputs.dart != 'true' || needs.cargo-ok.result == 'success') && (needs.selection.outputs.rust != 'true' || needs.cargo-ok2.result == 'success') ) || 
-          (needs.selection.outputs.rust == 'true' && needs.cargo-ok2.result == 'success' && needs.selection.outputs.dart != 'true')
-          ]]
+          if [ ${{ needs.selection.outputs.cargo-ok == 'true'}} || ${{ needs.selection.outputs.cargo-ok2 == 'true' }} ]
           then
-            exit 0
+            if [[ ( (needs.selection.outputs.dart != 'true' || needs.cargo-ok.result == 'success') && (needs.selection.outputs.rust != 'true' || needs.cargo-ok2.result == 'success') ) || 
+            (needs.selection.outputs.rust == 'true' && needs.cargo-ok2.result == 'success' && needs.selection.outputs.dart != 'true')
+            ]]
+            then
+              exit 0
+            else
+              exit 1
+            fi
           else
             exit 1
           fi
