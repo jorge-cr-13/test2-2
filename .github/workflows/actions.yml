@@ -92,7 +92,7 @@ jobs:
     steps:
       - name: CI OK Testing
         run: |
-          if [ ${{ needs.selection.outputs.cargo-ok == 'true'}} || ${{ needs.selection.outputs.cargo-ok2 == 'true' }} ]
+          if [ ${{ needs.selection.outputs.dart == 'true'}} || ${{ needs.selection.outputs.rust == 'true' }} ]
           then
             if [[ ( (needs.selection.outputs.dart != 'true' || needs.cargo-ok.result == 'success') && (needs.selection.outputs.rust != 'true' || needs.cargo-ok2.result == 'success') ) || 
             (needs.selection.outputs.rust == 'true' && needs.cargo-ok2.result == 'success' && needs.selection.outputs.dart != 'true')
