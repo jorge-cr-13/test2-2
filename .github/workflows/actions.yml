@@ -94,8 +94,8 @@ jobs:
         run: |
           if [ ${{ needs.selection.outputs.dart == 'true'}} || ${{ needs.selection.outputs.rust == 'true' }} ]
           then
-            if [[ ( (needs.selection.outputs.dart != 'true' || needs.cargo-ok.result == 'success') && (needs.selection.outputs.rust != 'true' || needs.cargo-ok2.result == 'success') ) || 
-            (needs.selection.outputs.rust == 'true' && needs.cargo-ok2.result == 'success' && needs.selection.outputs.dart != 'true')
+            if [[ ( (${{needs.selection.outputs.dart != 'true'}} || ${{needs.cargo-ok.result == 'success'}}) && (${{needs.selection.outputs.rust != 'true'}} || ${{needs.cargo-ok2.result == 'success'}}) ) || 
+            (${{needs.selection.outputs.rust == 'true'}} && ${{needs.cargo-ok2.result == 'success'}} && ${{needs.selection.outputs.dart != 'true'}})
             ]]
             then
               exit 0
