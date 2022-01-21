@@ -38,7 +38,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - run: |
-        if(needs.cargo-test2.result == failure)
+        if (needs.cargo-test2.result == failure)
           then
             exit 1
           fi
@@ -70,12 +70,6 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - name: Rust result
-        run: |
-          if ( needs.cargo-test.result == 'failure' )
-          then
-            exit 1
-          fi
       - run: exit 0
   cargo-ok2:
     name: cargo-ok2
