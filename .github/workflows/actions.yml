@@ -38,10 +38,10 @@ jobs:
     timeout-minutes: 5
     steps:
       - run: |
-        if ( ${{needs.cargo-test2.result}} == 'failure')
-        then
-          exit 1
-        fi
+          if ( ${{needs.cargo-test2.result}} == 'failure')
+            then
+            exit 1
+          fi
       - run: echo Sigue
   cargo-ok:
     name: cargo-ok
