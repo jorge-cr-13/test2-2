@@ -32,12 +32,17 @@ jobs:
       - run: exit 0
   cargo-test:
     name: cargo-test
-    needs: selection
-    if: ${{ needs.selection.outputs.dart == 'true' }}
+    needs: [selection,cargo-test2]
+    if: ${{always()}}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - run: exit 0
+      - run: |
+          if ( ${{needs.cargo-test2.result}} == 'failure')
+            then
+            exit 1
+          fi
+      - run: echo Sigue
   cargo-ok:
     name: cargo-ok
     needs: 
@@ -65,12 +70,6 @@ jobs:
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - name: Rust result
-        run: |
-          if( needs.cargo-test.result == 'failure' )
-          then
-            exit 1
-          fi
       - run: exit 0
   cargo-ok2:
     name: cargo-ok2
@@ -95,7 +94,7 @@ jobs:
           if (${{ needs.selection.outputs.dart == 'true'}} || ${{ needs.selection.outputs.rust == 'true' }} )
           then
             if (( (${{needs.selection.outputs.dart != 'true'}} || ${{needs.cargo-ok.result == 'success'}}) && (${{needs.selection.outputs.rust != 'true'}} || ${{needs.cargo-ok2.result == 'success'}}) ) || 
-            (${{needs.selection.outputs.rust == 'true'}} && ${{needs.cargo-ok2.result == 'success'}} && ${{needs.selection.outputs.dart != 'true'}}))
+            (${{needs.selection.outputs.dart == 'true'}} && ${{needs.cargo-ok2.result == 'success'}} && ${{needs.selection.outputs.rust != 'true'}}))
             then
               exit 0
             else
