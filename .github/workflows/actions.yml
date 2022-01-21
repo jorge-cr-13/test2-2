@@ -48,11 +48,16 @@ jobs:
     needs: 
       - cargo-format
       - cargo-test
-    if: ${{ needs.selection.outputs.dart == 'true' }}
+    if: ${{always()}}
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
-      - run: exit 1
+      - run: |
+          if (${{needs.cargo-format.result}} == 'success' && ${{needs.cargo-test.result}} == 'success')
+          then
+            exit 0
+          else
+            exit 1
 
   #   #TEST2
   cargo-format2:
