@@ -38,7 +38,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - run: |
-        if ( ${{needs.cargo-test2.result}} == failure)
+        if ( ${{needs.cargo-test2.result}} == 'failure')
           then
             exit 1
           fi
