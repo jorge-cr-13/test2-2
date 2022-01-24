@@ -9,14 +9,12 @@ jobs:
   ci-ok:
     name: ci-ok
     needs: [dev-ci]
-   #if: ${{always()}} 
     runs-on: ubuntu-20.04
     timeout-minutes: 5
     steps:
       - name: CI OK Testing
         run: |
-          # if (${{ needs.dev-ci.outputs.dart == 'true'}} || ${{ needs.dev-ci.outputs.rust == 'true' }} )
-          # then
+          echo ${{needs.dev-ci.cargo-ok.result}}
           if (( (${{needs.dev-ci.outputs.dart != 'true'}} || ${{needs.cargo-ok.result == 'success'}}) && (${{needs.dev-ci.outputs.rust != 'true'}} || ${{needs.cargo-ok2.result == 'success'}}) ) || 
           (${{needs.dev-ci.outputs.dart == 'true'}} && ${{needs.cargo-ok2.result == 'success'}} && ${{needs.dev-ci.outputs.rust != 'true'}}))
           then
@@ -24,9 +22,6 @@ jobs:
           else
             exit 1
           fi
-          # else
-          #   exit 1
-          # fi
             
 
       
