@@ -1,0 +1,106 @@
+name: Reusable Dev CI
+
+on:
+  workflow_call:
+    outputs:
+      dart_output:
+        description: Output if dart has to be ran 
+        value: ${{ jobs.selection.dart }}
+      rust_output:
+        description: Output if rust has to be ran 
+        value: ${{ jobs.selection.rust }}
+
+env:
+  RUST_STABLE: 1.55
+  RUST_NIGHTLY: nightly-2021-09-09
+  FLUTTER_VERSION: '2.5.3'
+  DART_WORKSPACE: ${{ github.workspace }}/bindings/dart
+  CARGO_INCREMENTAL: 0
+  # flags to use for test, tarpaulin and to build the linux library
+  COMMON_CARGO_TEST_FLAGS: --all-features
+
+jobs:
+  # JOB to run change detection
+  selection:
+    runs-on: ubuntu-latest
+    # Set job outputs to values from filter step
+    outputs:
+      dart: ${{ steps.filter.outputs.dart }}
+      rust: ${{ steps.filter.outputs.rust }}
+    steps:
+      # For pull requests it's not necessary to checkout the code
+      - uses: dorny/paths-filter@b2feaf19c27470162a626bd6fa8438ae5b263721
+        id: filter
+        with:
+          filters: |
+            dart:
+              - 'testFolder/**'
+              - 'testFolder2/**'
+            rust:
+              - 'testFolder2/**'
+    #TEST 1
+  cargo-format:
+    name: cargo-format
+    needs: selection
+    if: ${{ needs.selection.outputs.dart == 'true' }}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - run: exit 0
+  cargo-test:
+    name: cargo-test
+    needs: [selection,cargo-test2]
+    if: ${{always()}}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - run: |
+          if ( ${{needs.cargo-test2.result == 'failure'}})
+            then
+            exit 1
+          fi
+      - run: echo Sigue
+  cargo-ok:
+    name: cargo-ok
+    needs: 
+      - cargo-format
+      - cargo-test
+    if: ${{always()}}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - run: |
+          if (${{needs.cargo-format.result == 'success' }} && ${{needs.cargo-test.result == 'success'}})
+          then
+            exit 0
+          else
+            exit 1
+          fi
+
+  #   #TEST2
+  cargo-format2:
+    name: cargo-format2
+    needs: selection
+    if: ${{ needs.selection.outputs.rust == 'true'}}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - run: exit 0
+  cargo-test2:
+    name: cargo-test2
+    needs: selection
+    if: ${{ needs.selection.outputs.rust == 'true' }}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - run: exit 1
+  cargo-ok2:
+    name: cargo-ok2
+    needs: 
+      - cargo-format2
+      - cargo-test2
+    if: ${{ needs.selection.outputs.rust == 'true' }}
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5
+    steps:
+      - run: exit 0
