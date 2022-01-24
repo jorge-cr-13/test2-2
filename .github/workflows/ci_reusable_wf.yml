@@ -5,10 +5,13 @@ on:
     outputs:
       dart_output:
         description: Output if dart has to be ran 
-        value: ${{ jobs.selection.dart }}
+        value: ${{ jobs.selection.outputs.dart }}
       rust_output:
         description: Output if rust has to be ran 
-        value: ${{ jobs.selection.rust }}
+        value: ${{ jobs.selection.outputs.rust }}
+      cargo-ok:
+        description: Output if rust has to be ran 
+        value: ${{ jobs.run-result.cargo-ok }}
 
 env:
   RUST_STABLE: 1.55
@@ -86,6 +89,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - run: exit 0
+
   cargo-test2:
     name: cargo-test2
     needs: selection
@@ -94,6 +98,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - run: exit 0
+
   cargo-ok2:
     name: cargo-ok2
     needs: 
@@ -104,3 +109,17 @@ jobs:
     timeout-minutes: 5
     steps:
       - run: exit 0
+
+    # run-ok:
+    #   name: run-result
+    #   outputs:
+    #     cargo-ok:
+    #       value: ${{ steps.get-result.outputs.cargo-ok-result }}
+    #   needs: 
+    #     - cargo-ok
+    #     - cargo-ok2
+    #   steps:
+    #     - id: get-result
+    #       run: |
+    #         echo "::set-output name=cargo-ok-result::${{needs.cargo-ok2.result}}"
+
