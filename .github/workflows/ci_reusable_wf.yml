@@ -12,6 +12,9 @@ on:
       cargo-ok:
         description: Output if rust has to be ran 
         value: ${{ jobs.cargo-ok.result }}
+      cargo-ok2:
+        description: Output if rust has to be ran 
+        value: ${{ jobs.cargo-ok2.result }}
 
 env:
   RUST_STABLE: 1.55
@@ -109,17 +112,3 @@ jobs:
     timeout-minutes: 5
     steps:
       - run: exit 0
-
-    # run-ok:
-    #   name: run-result
-    #   outputs:
-    #     cargo-ok:
-    #       value: ${{ steps.get-result.outputs.cargo-ok-result }}
-    #   needs: 
-    #     - cargo-ok
-    #     - cargo-ok2
-    #   steps:
-    #     - id: get-result
-    #       run: |
-    #         echo "::set-output name=cargo-ok-result::${{needs.cargo-ok2.result}}"
-
