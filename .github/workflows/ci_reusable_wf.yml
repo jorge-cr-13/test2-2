@@ -1,6 +1,23 @@
-name: Test CI
+name: Reusable Dev CI
+
 on:
-  pull_request:
+  workflow_call:
+    outputs:
+      dart_output:
+        description: Output if dart has to be ran 
+        value: ${{ jobs.selection.dart }}
+      rust_output:
+        description: Output if rust has to be ran 
+        value: ${{ jobs.selection.rust }}
+
+env:
+  RUST_STABLE: 1.55
+  RUST_NIGHTLY: nightly-2021-09-09
+  FLUTTER_VERSION: '2.5.3'
+  DART_WORKSPACE: ${{ github.workspace }}/bindings/dart
+  CARGO_INCREMENTAL: 0
+  # flags to use for test, tarpaulin and to build the linux library
+  COMMON_CARGO_TEST_FLAGS: --all-features
 
 jobs:
   # JOB to run change detection
@@ -87,28 +104,3 @@ jobs:
     timeout-minutes: 5
     steps:
       - run: exit 0
-
-  ci-ok:
-    name: ci-ok
-    needs: [selection, cargo-ok2, cargo-ok]
-    if: ${{always()}} 
-    runs-on: ubuntu-20.04
-    timeout-minutes: 5
-    steps:
-      - name: CI OK Testing
-        run: |
-          if (${{ needs.selection.outputs.dart == 'true'}} || ${{ needs.selection.outputs.rust == 'true' }} )
-          then
-            if (( (${{needs.selection.outputs.dart != 'true'}} || ${{needs.cargo-ok.result == 'success'}}) && (${{needs.selection.outputs.rust != 'true'}} || ${{needs.cargo-ok2.result == 'success'}}) ) || 
-            (${{needs.selection.outputs.dart == 'true'}} && ${{needs.cargo-ok2.result == 'success'}} && ${{needs.selection.outputs.rust != 'true'}}))
-            then
-              exit 0
-            else
-              exit 1
-            fi
-          else
-            exit 1
-          fi
-            
-
-      
