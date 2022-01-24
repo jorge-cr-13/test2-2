@@ -9,6 +9,9 @@ on:
       rust_output:
         description: Output if rust has to be ran 
         value: ${{ jobs.selection.rust }}
+      cargo-ok:
+        description: Output if rust has to be ran 
+        value: ${{ jobs.run-result.cargo-ok }}
 
 env:
   RUST_STABLE: 1.55
@@ -107,9 +110,16 @@ jobs:
     steps:
       - run: exit 0
 
-    # run-result:
-    #   name: run-result
-    #   needs: 
-    #     - cargo-ok
-    #     - cargo-ok2
-      
+    run-ok:
+      name: run-result
+      outputs:
+        cargo-ok:
+          value: ${{ steps.get-result.outputs.cargo-ok-result }}
+      needs: 
+        - cargo-ok
+        - cargo-ok2
+      steps:
+        - id: get-result
+          run: |
+            echo "::set-output name=cargo-ok-result::${{needs.cargo-ok2.result}}"
+
