@@ -14,7 +14,6 @@ jobs:
     steps:
       - name: CI OK Testing
         run: |
-          echo ${{needs.dev-ci.outputs.dart_output}}
           if (( (${{needs.dev-ci.outputs.dart_output != 'true'}} || ${{needs.cargo-ok.result == 'success'}}) && (${{needs.dev-ci.outputs.rust != 'true'}} || ${{needs.cargo-ok2.result == 'success'}}) ) || 
           (${{needs.dev-ci.outputs.dart_output == 'true'}} && ${{needs.cargo-ok2.result == 'success'}} && ${{needs.dev-ci.outputs.rust != 'true'}}))
           then

@@ -11,7 +11,7 @@ on:
         value: ${{ jobs.selection.outputs.rust }}
       cargo-ok:
         description: Output if rust has to be ran 
-        value: ${{ jobs.run-result.cargo-ok }}
+        value: ${{ jobs.cargo-ok.result }}
 
 env:
   RUST_STABLE: 1.55
