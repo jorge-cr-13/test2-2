@@ -15,8 +15,9 @@ jobs:
       - name: CI OK Testing
         run: |
           echo ${{needs.dev-ci.outputs.cargo-ok}}
-          if (( (${{needs.dev-ci.outputs.dart_output != 'true'}} || ${{needs.cargo-ok.result == 'success'}}) && (${{needs.dev-ci.outputs.rust != 'true'}} || ${{needs.cargo-ok2.result == 'success'}}) ) || 
-          (${{needs.dev-ci.outputs.dart_output == 'true'}} && ${{needs.cargo-ok2.result == 'success'}} && ${{needs.dev-ci.outputs.rust != 'true'}}))
+          echo ${{needs.dev-ci.outputs.cargo-ok2}}
+          if (( (${{needs.dev-ci.outputs.dart_output != 'true'}} || ${{needs.dev-ci.outputs.cargo-ok == 'success'}}) && (${{needs.dev-ci.outputs.rust != 'true'}} || ${{needs.dev-ci.outputs.cargo-ok2 == 'success'}}) ) || 
+          (${{needs.dev-ci.outputs.dart_output == 'true'}} && ${{needs.dev-ci.outputs.cargo-ok2 == 'success'}} && ${{needs.dev-ci.outputs.rust != 'true'}}))
           then
             exit 0
           else
