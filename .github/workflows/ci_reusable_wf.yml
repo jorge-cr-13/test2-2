@@ -4,14 +4,6 @@ on:
   workflow_call:
     outputs:
       dart_output:
-        description: Output if dart has to be ran 
-        value: ${{ jobs.selection.outputs.dart }}
-      rust_output:
-        description: Output if rust has to be ran 
-        value: ${{ jobs.selection.outputs.rust }}
-      cargo-ok:
-        description: Output if rust has to be ran 
-        value: ${{ jobs.cargo-ok.result }}
       cargo-ok2:
         description: Output if rust has to be ran 
         value: ${{ jobs.cargo-ok2.result }}
