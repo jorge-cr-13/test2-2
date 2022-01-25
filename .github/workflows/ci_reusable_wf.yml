@@ -14,10 +14,10 @@ env:
 
 jobs:
   outputs:
-      cargo-ok2:
-        description: Output if rust has to be ran 
-        value: ${{ jobs.cargo-ok2.result }}
-        
+    cargo-ok2:
+      description: Output if rust has to be ran 
+      value: ${{ jobs.cargo-ok2.result }}
+
   # JOB to run change detection
   selection:
     runs-on: ubuntu-latest
