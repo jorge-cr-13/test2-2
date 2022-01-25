@@ -2,6 +2,19 @@ name: Reusable Dev CI
 
 on:
   workflow_call:
+    outputs:
+      cargo-ok2:
+        description: Output if rust has to be ran 
+        value: ${{ jobs.cargo-ok2.result }}
+      dart_output:
+        description: Output if dart has to be ran 
+        value: ${{ jobs.selection.outputs.dart }}
+      rust_output:
+        description: Output if rust has to be ran 
+        value: ${{ jobs.selection.outputs.rust }}
+      cargo-ok:
+        description: Output if rust has to be ran 
+        value: ${{ jobs.cargo-ok.result }}    
 
 env:
   RUST_STABLE: 1.55
@@ -13,11 +26,6 @@ env:
   COMMON_CARGO_TEST_FLAGS: --all-features
 
 jobs:
-  outputs:
-    cargo-ok2:
-      description: Output if rust has to be ran 
-      value: ${{ jobs.cargo-ok2.result }}
-
   # JOB to run change detection
   selection:
     runs-on: ubuntu-latest
