@@ -3,9 +3,9 @@ name: Reusable Dev CI
 on:
   workflow_call:
     outputs:
-      cargo-ok2:
-        description: Output if rust has to be ran 
-        value: ${{ jobs.cargo-ok2.result }}
+      # cargo-ok2:
+      #   description: Output if rust has to be ran 
+      #   value: ${{ jobs.cargo-ok2.result }}
       dart_output:
         description: Output if dart has to be ran 
         value: ${{ jobs.selection.outputs.dart }}
